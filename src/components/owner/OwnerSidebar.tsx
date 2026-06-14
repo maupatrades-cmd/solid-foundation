@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Settings,
   UserCog,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,20 +25,22 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const items = [
-  { title: "Dashboard", url: "/owner", icon: LayoutDashboard, live: true },
-  { title: "Leads", url: "/owner/leads", icon: Users, live: false },
-  { title: "Deals", url: "/owner/deals", icon: Briefcase, live: false },
-  { title: "Clients", url: "/owner/clients", icon: Users, live: false },
-  { title: "Invoices", url: "/owner/invoices", icon: Receipt, live: false },
-  { title: "Commissions", url: "/owner/commissions", icon: DollarSign, live: false },
-  { title: "Contracts", url: "/owner/contracts", icon: FileText, live: false },
-  { title: "Fulfilment", url: "/owner/fulfilment", icon: ClipboardList, live: false },
-  { title: "Team & HR", url: "/owner/team", icon: UserCog, live: false },
-  { title: "Marketing", url: "/owner/marketing", icon: Megaphone, live: false },
-  { title: "Activity", url: "/owner/activity", icon: Activity, live: false },
-  { title: "Comms", url: "/owner/comms", icon: MessageSquare, live: false },
-  { title: "Settings", url: "/owner/settings", icon: Settings, live: false },
+type Item = { title: string; section: string | null; icon: LucideIcon };
+
+const items: Item[] = [
+  { title: "Dashboard", section: null, icon: LayoutDashboard },
+  { title: "Leads", section: "leads", icon: Users },
+  { title: "Deals", section: "deals", icon: Briefcase },
+  { title: "Clients", section: "clients", icon: Users },
+  { title: "Invoices", section: "invoices", icon: Receipt },
+  { title: "Commissions", section: "commissions", icon: DollarSign },
+  { title: "Contracts", section: "contracts", icon: FileText },
+  { title: "Fulfilment", section: "fulfilment", icon: ClipboardList },
+  { title: "Team & HR", section: "team", icon: UserCog },
+  { title: "Marketing", section: "marketing", icon: Megaphone },
+  { title: "Activity", section: "activity", icon: Activity },
+  { title: "Comms", section: "comms", icon: MessageSquare },
+  { title: "Settings", section: "settings", icon: Settings },
 ];
 
 export function OwnerSidebar() {
@@ -50,23 +53,31 @@ export function OwnerSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
-                const active = pathname === item.url;
+                const url = item.section ? `/owner/${item.section}` : "/owner";
+                const active = pathname === url;
+                const isDashboard = item.section === null;
                 return (
-                  <SidebarMenuItem key={item.url}>
+                  <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={active}>
-                      <Link
-                        to={item.url}
-                        className="flex items-center gap-2"
-                        title={item.live ? item.title : `${item.title} (coming in slice 2)`}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span className="flex-1">{item.title}</span>
-                        {!item.live && (
+                      {isDashboard ? (
+                        <Link to="/owner" className="flex items-center gap-2">
+                          <item.icon className="h-4 w-4" />
+                          <span className="flex-1">{item.title}</span>
+                        </Link>
+                      ) : (
+                        <Link
+                          to="/owner/$section"
+                          params={{ section: item.section! }}
+                          className="flex items-center gap-2"
+                          title={`${item.title} (coming in slice 2)`}
+                        >
+                          <item.icon className="h-4 w-4" />
+                          <span className="flex-1">{item.title}</span>
                           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
                             soon
                           </span>
-                        )}
-                      </Link>
+                        </Link>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
