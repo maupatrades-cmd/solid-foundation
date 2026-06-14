@@ -1,0 +1,219 @@
+{
+  "name": "Contract",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "deal_id": {
+      "type": "string"
+    },
+    "package": {
+      "type": "string",
+      "enum": [
+        "ignite",
+        "accelerate",
+        "dominate",
+        "street_pulse",
+        "township_pulse",
+        "add_on"
+      ]
+    },
+    "add_on_name": {
+      "type": "string"
+    },
+    "setup_fee": {
+      "type": "number"
+    },
+    "monthly_retainer": {
+      "type": "number"
+    },
+    "initial_term_months": {
+      "type": "number"
+    },
+    "debit_order_date": {
+      "type": "string",
+      "enum": [
+        "1st",
+        "15th"
+      ]
+    },
+    "contract_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "contract_end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "auto_renews": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_renewal_reminder_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_signature_email_sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "signed",
+        "active",
+        "cancelled",
+        "expired"
+      ],
+      "default": "draft"
+    },
+    "signed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "signed_by_client": {
+      "type": "boolean",
+      "default": false
+    },
+    "signed_by_mio": {
+      "type": "boolean",
+      "default": false
+    },
+    "popia_signed": {
+      "type": "boolean",
+      "default": false
+    },
+    "cancellation_notice_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "cancellation_effective_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "cancellation_fee_applied": {
+      "type": "number"
+    },
+    "loaded_by_admin": {
+      "type": "string"
+    },
+    "loaded_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "document_url": {
+      "type": "string"
+    },
+    "signing_token": {
+      "type": "string"
+    },
+    "signing_status": {
+      "type": "string",
+      "enum": [
+        "not_sent",
+        "sent",
+        "viewed",
+        "partially_signed",
+        "fully_signed",
+        "expired"
+      ],
+      "default": "not_sent"
+    },
+    "signing_link_expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "client_signed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "marketing_io_signed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "final_signed_pdf_url": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "client_id",
+    "package",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "field_agent"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.client_id": "{{user.data.client_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "field_agent"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "cpc"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "owner"
+      }
+    }
+  }
+}
