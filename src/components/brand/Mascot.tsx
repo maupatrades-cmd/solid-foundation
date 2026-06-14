@@ -1,22 +1,20 @@
-import { useEffect, useState } from "react";
-import Lottie from "lottie-react";
+import { useEffect, useRef, useState } from "react";
+import lottie, { type AnimationItem } from "lottie-web";
 import mascotAsset from "@/assets/mascot-mj-dance.json.asset.json";
 
-let cachedData: unknown | null = null;
+let cachedData: object | null = null;
 
 function useMascotData() {
-  const [data, setData] = useState<unknown | null>(cachedData);
+  const [data, setData] = useState<object | null>(cachedData);
   useEffect(() => {
     if (cachedData) {
-      console.log("[Mascot] using cached data");
+      if (!data) setData(cachedData);
       return;
     }
     let cancelled = false;
-    console.log("[Mascot] fetching", mascotAsset.url);
     fetch(mascotAsset.url)
       .then((r) => r.json())
       .then((json) => {
-        console.log("[Mascot] loaded, layers:", (json as { layers?: unknown[] }).layers?.length);
         cachedData = json;
         if (!cancelled) setData(json);
       })
@@ -24,7 +22,7 @@ function useMascotData() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [data]);
   return data;
 }
 
@@ -45,6 +43,8 @@ export function Mascot({
   onDismiss?: () => void;
 }) {
   const data = useMascotData();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const animRef = useRef<AnimationItem | null>(null);
 
   useEffect(() => {
     if (mode !== "overlay" || !onDismiss) return;
@@ -61,6 +61,22 @@ export function Mascot({
     return () => window.removeEventListener("keydown", onKey);
   }, [mode, onDismiss]);
 
+  useEffect(() => {
+    if (!data || !containerRef.current) return;
+    const anim = lottie.loadAnimation({
+      container: containerRef.current,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: data,
+    });
+    animRef.current = anim;
+    return () => {
+      anim.destroy();
+      animRef.current = null;
+    };
+  }, [data]);
+
   if (mode === "overlay") {
     return (
       <div
@@ -71,25 +87,21 @@ export function Mascot({
         className="fixed inset-0 z-[60] flex items-center justify-center cursor-pointer"
         style={{ background: "rgba(10,10,46,0.85)", backdropFilter: "blur(4px)" }}
       >
-        <div style={{ width: 400, height: 400, maxWidth: "85vw", maxHeight: "85vw" }}>
-          {data ? <Lottie animationData={data} loop autoplay /> : null}
-        </div>
+        <div
+          ref={containerRef}
+          style={{ width: 400, height: 400, maxWidth: "85vw", maxHeight: "85vw" }}
+        />
       </div>
     );
   }
 
   return (
     <div
+      ref={containerRef}
       aria-hidden="true"
       className={className}
       data-mascot="loop"
-      style={{ width: size, height: size, pointerEvents: "none", background: "rgba(255,0,0,0.2)", border: "2px dashed red" }}
-    >
-      {data ? (
-        <Lottie animationData={data} loop autoplay style={{ width: "100%", height: "100%" }} />
-      ) : (
-        <span style={{ color: "red", fontSize: 10 }}>NODATA</span>
-      )}
-    </div>
+      style={{ width: size, height: size, pointerEvents: "none" }}
+    />
   );
 }
