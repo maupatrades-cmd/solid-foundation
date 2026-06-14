@@ -7,15 +7,20 @@ let cachedData: unknown | null = null;
 function useMascotData() {
   const [data, setData] = useState<unknown | null>(cachedData);
   useEffect(() => {
-    if (cachedData) return;
+    if (cachedData) {
+      console.log("[Mascot] using cached data");
+      return;
+    }
     let cancelled = false;
+    console.log("[Mascot] fetching", mascotAsset.url);
     fetch(mascotAsset.url)
       .then((r) => r.json())
       .then((json) => {
+        console.log("[Mascot] loaded, layers:", (json as { layers?: unknown[] }).layers?.length);
         cachedData = json;
         if (!cancelled) setData(json);
       })
-      .catch(() => {});
+      .catch((e) => console.error("[Mascot] fetch failed", e));
     return () => {
       cancelled = true;
     };
