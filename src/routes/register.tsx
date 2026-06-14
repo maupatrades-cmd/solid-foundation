@@ -302,7 +302,7 @@ function RegisterPage() {
     });
   }
 
-  async function persistProfile(patch: Partial<Form> & { onboarding_step?: number }) {
+  async function persistProfile(patch: Record<string, unknown>) {
     if (!userId) return;
     const { error: err } = await supabase
       .from("profiles")
