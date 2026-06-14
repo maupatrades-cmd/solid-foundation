@@ -1,26 +1,18 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { OwnerSidebar } from "@/components/owner/OwnerSidebar";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/owner")({
-  head: () => ({ meta: [{ title: "Owner Dashboard" }] }),
-  component: OwnerDashboard,
+  head: () => ({ meta: [{ title: "Owner — Marketing iO" }] }),
+  component: OwnerShell,
 });
 
-function OwnerDashboard() {
-  const navigate = useNavigate();
+function OwnerShell() {
   const { user } = Route.useRouteContext();
-  const [roles, setRoles] = useState<string[]>([]);
-
-  useEffect(() => {
-    supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .then(({ data }) => setRoles((data ?? []).map((r) => r.role)));
-  }, [user.id]);
+  const navigate = useNavigate();
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -29,18 +21,31 @@ function OwnerDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-lg text-center space-y-6">
-        <h1 className="text-4xl font-bold tracking-tight">Owner Dashboard</h1>
-        <p className="text-muted-foreground">Signed in as {user.email}</p>
-        <p className="text-sm">
-          <span className="text-muted-foreground">Role: </span>
-          <span className="font-medium">{roles.join(", ") || "loading…"}</span>
-        </p>
-        <Button onClick={handleSignOut} variant="outline">
-          Sign out
-        </Button>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <OwnerSidebar />
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="h-14 flex items-center justify-between border-b px-4 gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <SidebarTrigger />
+              <Link to="/owner" className="font-semibold tracking-tight truncate">
+                Marketing iO — Owner
+              </Link>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <span className="hidden sm:inline text-muted-foreground truncate max-w-[200px]">
+                {user.email}
+              </span>
+              <Button onClick={handleSignOut} variant="outline" size="sm">
+                Sign out
+              </Button>
+            </div>
+          </header>
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
