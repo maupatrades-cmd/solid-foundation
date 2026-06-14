@@ -20,15 +20,25 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+
+  async function loadRoles(userId: string) {
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+    setRoles((data ?? []).map((r) => r.role));
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
+      if (data.user) loadRoles(data.user.id);
       setLoading(false);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) loadRoles(u.id);
+      else setRoles([]);
     });
     return () => sub.subscription.unsubscribe();
   }, []);
@@ -50,6 +60,14 @@ function Index() {
               ? `Signed in as ${user.email}`
               : "Sign in to continue."}
         </p>
+        {!loading && user && (
+          <p className="text-sm">
+            <span className="text-muted-foreground">Role: </span>
+            <span className="font-medium">
+              {roles.length > 0 ? roles.join(", ") : "no role assigned"}
+            </span>
+          </p>
+        )}
         {!loading && (
           <div className="flex justify-center gap-2">
             {user ? (
