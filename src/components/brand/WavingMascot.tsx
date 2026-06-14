@@ -90,20 +90,6 @@ export function WavingMascot() {
         <Mascot mode="loop" size={90} />
       </motion.div>
 
-      {/* DEBUG: static mascot to verify Lottie rendering */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-180px",
-          left: "0px",
-          width: 120,
-          height: 120,
-          zIndex: 50,
-          border: "2px solid lime",
-        }}
-      >
-        <Mascot mode="loop" size={120} />
-      </div>
 
       {landed && (
         <>
