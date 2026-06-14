@@ -1,63 +1,79 @@
-# Port branding, mascot & auth UX from the old Marketing iO project
+# Slice 1 — Owner Shell + Dashboard
 
-## Scope (what I'll change)
+Feature-parity rebuild of sections **0 (Login → Owner landing)** and **1 (OwnerDashboard)** from `docs/architecture/OWNER_FEATURE_WALKTHROUGH.md`. Everything else in the doc is deferred to later slices.
 
-Only the auth experience and shared brand assets. No changes to `src/lib/`, `supabase/migrations/`, `tests/`, or the existing `_authenticated` pages.
+## Reference doc
+- Downloaded to `docs/architecture/OWNER_FEATURE_WALKTHROUGH.md` (811 lines, fetched from `claude/owner-walkthrough-doc`).
+- Source code referenced via `cross_project--read_project_file` against the same branch as needed (e.g. `src/pages/OwnerDashboard.jsx`, `base44/functions/auth-login/entry.ts`).
 
-## What the old project has that we'll bring over
+## Data import — important clarification
+The old CRM runs on **Base44** (its own backend platform). The GitHub repo contains schema definitions under `base44/` but **does not contain DB rows**. To smoke-test against real data I need one of:
+1. CSV exports of `Client`, `Deal`, `Invoice`, `Commission`, `Lead`, `MonthlyReport`, `Task`, `AppUser`, `Playbook` from the Base44 admin — uploaded to chat.
+2. A SQL dump if you have direct DB access.
+3. **For this slice, seed realistic demo data** (~12 clients, ~25 deals across stages, ~40 invoices spanning 12 weeks, ~15 leads, ~8 commissions, ~6 tasks) so the dashboard renders. Swap to real data when the export arrives.
 
-- **Logo PNG** — currently hot-linked from base44 CDN (`marketing_io_main_logo`). I'll download it once and upload it via `lovable-assets` so it lives on our own CDN with a stable `.asset.json` pointer.
-- **Waving mascot** — `src/assets/lottie/mascot-mj-dance.json` (35 KB Lottie). Uploaded as a CDN asset; rendered with `lottie-react`.
-- **SignIn visuals** — logo + "Too Good To Stay Hidden" tagline + typewriter "Welcome back" + framer-motion mascot that flies in over the card with a typed speech bubble + brand colours `#0A1F44` (navy) and `#E63946` (red). Already matches the design tokens we set up last turn.
-- **Register multi-step flow** — 5-step form (account → business → story → current state → contact prefs). Old backend stored all of it on a custom `User` entity; we'll keep the same UX but persist the extra fields into our `profiles` table.
-- **Auth emails** — old project sent its own templated emails. We'll scaffold Lovable Cloud's auth email templates and brand them with the logo + navy/red palette so confirmation / password-reset / magic-link emails match.
+I will proceed with **option 3 (seeded demo data)** unless you upload CSVs in your next message.
 
-## What we will NOT port (and why)
+## Scope of slice 1
+1. **Schema** — tables needed to render the dashboard:
+   `clients`, `deals`, `invoices`, `leads`, `commissions`, `tasks`, `playbooks`, `monthly_reports`.
+   Mirror Base44 field names (snake_case) from the walkthrough doc + cross-project source reads.
+2. **Auth** — Email/password sign-in already exists. The original adds Resend OTP MFA + lockout. For slice 1: keep current email/password, **add OTP MFA via Resend** in a follow-up so we don't block the dashboard build. (Confirm: skip OTP for now, or block on it?)
+3. **Role gating** — Add `owner` to `app_role` enum. Sign-in routes `owner` to `/owner`, others to `/`.
+4. **Owner shell** — `/owner` layout under `_authenticated/`: sidebar with the 12 surfaces listed in section 12 of the doc (only the Dashboard link is live; others are stubs flagged "coming in slice 2").
+5. **Owner dashboard** — `/owner` index page renders the section 1 spec:
+   - 6 KPI cards: Active clients, Pipeline value (R), MRR (R), Closed deals this month, Open leads, Commission accrued this month.
+   - 12-week paid-invoices area chart (SAST weeks, Recharts).
+   - Pipeline stage funnel bar chart.
+   - 3 widgets: TaskWidget (your open tasks), TeamKPIsWidget (staff vs targets), QuickScriptsWidget (owner-pinned playbooks).
+6. **Aggregation** — done **server-side** in `createServerFn` (fixes the doc's "Known issues: slow client-side aggregation"). One RPC returns all KPIs + chart series + widget data.
+7. **Seed migration** — SQL `INSERT` block creating the demo rows.
 
-- **base44 backend code** (`auth-login` edge function, custom OTP/MFA, captcha-on-login, account-lockout). Supabase Auth handles login/lockout natively; layering a custom OTP flow on top is a separate, larger piece of work. The plan keeps the visible captcha on Sign-up only (matches the old Register).
-- **`AnimatedBot.jsx` purple SVG** — the SignIn page uses the Lottie mascot, not this SVG, so it's dead code in context.
-- **`SignIn`'s 423 / `password_reset_required` branch** — depends on the custom backend. Supabase's normal "forgot password" link covers the same UX.
+## Out of scope (later slices, per section 16)
+Sales spine (leads/deals/log-sale), money spine (invoice runs, payroll, commissions state machine), contracts, fulfilment, team/HR admin, marketing/catalog, audit drill-down, comms, settings.
 
-## Build steps
+## Technical details
 
-### 1. Brand assets (CDN)
-- `curl` the logo PNG from the base44 URL into `/tmp`, then `lovable-assets create` → `src/assets/marketing-io-logo.png.asset.json`.
-- Copy the Lottie JSON, then `lovable-assets create` → `src/assets/mascot-mj-dance.json.asset.json`. Fetch the JSON at runtime via `fetch(asset.url).then(r => r.json())` so we don't bundle 35 KB into the auth chunk.
-- `bun add lottie-react framer-motion`.
+### File layout
+```text
+src/routes/
+  _authenticated/
+    owner.tsx                 # owner shell layout (sidebar + Outlet)
+    owner.index.tsx           # dashboard page
+src/components/owner/
+  KpiCard.tsx
+  WeeklyPaidChart.tsx
+  PipelineFunnel.tsx
+  TaskWidget.tsx
+  TeamKpisWidget.tsx
+  QuickScriptsWidget.tsx
+  OwnerSidebar.tsx
+src/lib/
+  owner-dashboard.functions.ts   # createServerFn: getOwnerDashboard()
+```
 
-### 2. Shared components (`src/components/brand/`)
-- `Logo.tsx` — `<img>` using the asset pointer, accepts `className` for sizing.
-- `Mascot.tsx` — wraps `lottie-react` with two modes (`loop` decoration, `overlay` full-screen dismissible — same API as the old `MascotPlayer`).
-- `WavingMascot.tsx` — the framer-motion fly-in + typewriter speech bubble used on SignIn.
+### Server function shape
+`getOwnerDashboard()` — `requireSupabaseAuth` + `has_role(uid,'owner')` guard. Runs SQL aggregates (sum/group/date_trunc to week in `Africa/Johannesburg`) and returns one DTO `{ kpis, weeklyPaid[12], funnel[], tasks[], teamKpis[], playbooks[] }`. Client uses `useSuspenseQuery` via the TanStack Query default pattern.
 
-### 3. Rewrite `src/routes/auth.tsx` (SignIn tab)
-- Replace the "Marketing IO CRM" title with the `<Logo />` + tagline + typewriter "Welcome back".
-- Wrap the card with `WavingMascot` over the top.
-- Keep the existing Supabase `signInWithPassword` + `routeByRole` logic untouched.
-- Move Sign-up to its own route (next step) and replace the Sign-up tab with a link to it.
+### Migration order
+1. Create `app_role` value `'owner'` (if not present) + 8 tables with grants + RLS scoped to owner/admin via `has_role`.
+2. Seed function/insert demo rows.
+3. Grant current logged-in user the `owner` role (you'll need to run this manually or tell me your user email and I'll include it in the seed).
 
-### 4. New route `src/routes/register.tsx` — 5-step Sign-up
-- Step 1 (account): first/last name, email, mobile, city, street, province, password + confirm, captcha, terms.
-- Step 2 (business): business name, industry, years, team size, address, province.
-- Step 3 (story): 12-month goal, biggest challenge, founder inspiration, competitor envy (all skippable).
-- Step 4 (current state): revenue range, new-customer target, urgency, marketing assets checklist, agency history (skippable).
-- Step 5 (contact): budget, channels, best call time, consultation/proposal checkboxes, POPIA consent (required).
-- On submit of step 1: call `supabase.auth.signUp` with `data: { full_name, ... }`. On success of later steps: `supabase.from("profiles").update(...)` for the signed-in user. If the user closes the tab mid-flow, the account exists from step 1 onward and they can resume later.
-- Constant lists (PROVINCES, INDUSTRIES, etc.) live in `src/components/auth/register-options.ts`.
+### Charts
+Recharts (matches original). Already a common dep; will install if missing.
 
-### 5. Profiles schema extension (one migration)
-- `ALTER TABLE public.profiles` to add nullable columns for the extra fields collected in steps 1–5 (mobile, city, province, address, business name, industry, years, team size, 12-month goal, challenge, inspiration, competitor envy, revenue range, customer target, urgency, marketing assets `text[]`, agency history, budget, contact channels `text[]`, best call time, wants_consultation, wants_proposal, popia_consent, terms_agreed).
-- RLS already allows the user to update their own profile row — no policy changes needed.
+## Smoke test steps (after approve + build)
+1. Sign in with your existing account.
+2. (One-time) I'll provide a one-click "Make me owner" button on `/` for the first user — clicks calls a server fn that grants `owner` role to `auth.uid()` only if no owner exists yet (bootstrap pattern).
+3. Navigate to `/owner` — sidebar visible, dashboard loads in <2s.
+4. Verify 6 KPI cards show non-zero numbers from seed data.
+5. Verify weekly chart shows 12 bars, pipeline funnel shows all stages.
+6. Verify TaskWidget lists tasks assigned to you (seed includes 2 for the bootstrap owner).
+7. Click a sidebar stub → see "Coming in slice 2" placeholder.
+8. Sign out → redirected to `/auth`; `/owner` redirects to `/auth` when unauthenticated.
 
-### 6. Branded auth emails
-- Call `scaffold_auth_email_templates` to generate the React Email templates + edge function.
-- Restyle each template (signup, recovery, magic-link, invite, email-change, reauthentication) with the logo, navy/red palette, and "Too Good To Stay Hidden" tagline.
-- Deploy the `auth-email-hook` edge function.
-
-### 7. Cleanup
-- Remove the hard-coded "Marketing IO CRM" string from `src/routes/auth.tsx` head/title (replace with "Sign in — Marketing iO").
-- Verify build is green and the preview shows: logo, typewriter, mascot fly-in, working sign-in, working multi-step register.
-
-## Open question
-
-The old register collects 25+ profile fields. **Do you want all 5 steps now, or should I ship steps 1 + 5 (account + contact prefs) first and leave the business/story/state steps for a follow-up?** Full version takes longer but matches the old project exactly.
+## Open questions before I build
+1. **OTP MFA** — block slice 1 on it, or defer to slice 1b?
+2. **Bootstrap owner** — your account email so I can auto-grant `owner` in the seed migration? (Otherwise I add the one-click bootstrap button.)
+3. **Data** — proceed with seeded demo, or are you uploading CSVs?
