@@ -60,6 +60,14 @@ function Index() {
               ? `Signed in as ${user.email}`
               : "Sign in to continue."}
         </p>
+        {!loading && user && (
+          <p className="text-sm">
+            <span className="text-muted-foreground">Role: </span>
+            <span className="font-medium">
+              {roles.length > 0 ? roles.join(", ") : "no role assigned"}
+            </span>
+          </p>
+        )}
         {!loading && (
           <div className="flex justify-center gap-2">
             {user ? (
