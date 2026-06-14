@@ -1,0 +1,253 @@
+{
+  "name": "AppUser",
+  "type": "object",
+  "properties": {
+    "deletion_pending": {
+      "default": false,
+      "description": "True after the user requested account deletion. Account enters 30-day grace per POPIA before hard delete.",
+      "type": "boolean"
+    },
+    "deletion_requested_at": {
+      "description": "Timestamp the user clicked 'Delete account'. Hard delete eligible after deletion_requested_at + 30 days.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "email": {
+      "description": "User email address",
+      "type": "string"
+    },
+    "email_verified": {
+      "default": false,
+      "description": "Has email been verified",
+      "type": "boolean"
+    },
+    "failed_login_count": {
+      "default": 0,
+      "description": "Consecutive failed login attempts",
+      "type": "number"
+    },
+    "first_name": {
+      "description": "User first name (multi-step signup)",
+      "type": "string"
+    },
+    "force_logout_at": {
+      "description": "Server-side bump used by 'Sign out everywhere'. Sessions issued before this timestamp should be treated as invalid by auth-me.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "full_name": {
+      "description": "User full name",
+      "type": "string"
+    },
+    "last_login_at": {
+      "description": "Last login timestamp",
+      "format": "date-time",
+      "type": "string"
+    },
+    "last_name": {
+      "description": "User last name (multi-step signup)",
+      "type": "string"
+    },
+    "lockdown_token": {
+      "description": "LB-031c: One-time token embedded in the 'wasn't me' link emailed after every successful password change.",
+      "type": "string"
+    },
+    "lockdown_token_expires_at": {
+      "description": "LB-031c: When lockdown_token expires (24h after password change).",
+      "format": "date-time",
+      "type": "string"
+    },
+    "lockout_until": {
+      "description": "Account locked until this time",
+      "format": "date-time",
+      "type": "string"
+    },
+    "mobile_number": {
+      "description": "Mobile number, SA format (+27 or 0-prefixed, 10 digits if local)",
+      "type": "string"
+    },
+    "password_changed_at": {
+      "description": "When the password was last changed",
+      "format": "date-time",
+      "type": "string"
+    },
+    "password_expires_at": {
+      "description": "When the password expires (90 days after last change)",
+      "format": "date-time",
+      "type": "string"
+    },
+    "password_hash": {
+      "description": "Bcrypt hashed password",
+      "type": "string"
+    },
+    "password_history": {
+      "description": "Last 10 bcrypt hashes \u2014 new passwords must not match any of these",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "password_reset_expires_at": {
+      "description": "When reset token expires",
+      "format": "date-time",
+      "type": "string"
+    },
+    "password_reset_required": {
+      "default": false,
+      "description": "LB-031c: Set true by emergency-account-lockdown.",
+      "type": "boolean"
+    },
+    "password_reset_token": {
+      "description": "Token for password reset email",
+      "type": "string"
+    },
+    "pending_otp_code": {
+      "description": "Current OTP code",
+      "type": "string"
+    },
+    "pending_otp_expires_at": {
+      "description": "When OTP expires",
+      "format": "date-time",
+      "type": "string"
+    },
+    "pending_otp_purpose": {
+      "description": "What the OTP is for",
+      "enum": [
+        "signup_verification",
+        "login_mfa",
+        "password_reset"
+      ],
+      "type": "string"
+    },
+    "pending_verification": {
+      "default": true,
+      "description": "Waiting for signup OTP verification",
+      "type": "boolean"
+    },
+    "popia_consent_at": {
+      "description": "When POPIA consent was given",
+      "format": "date-time",
+      "type": "string"
+    },
+    "popia_consent_given": {
+      "default": false,
+      "description": "POPIA marketing-communication consent flag",
+      "type": "boolean"
+    },
+    "role": {
+      "default": "client",
+      "description": "User role in the app.",
+      "enum": [
+        "client",
+        "staff",
+        "admin",
+        "owner",
+        "field_agent",
+        "cpc",
+        "head_of_tech",
+        "driver"
+      ],
+      "type": "string"
+    },
+    "session_expires_at": {
+      "description": "When session expires",
+      "format": "date-time",
+      "type": "string"
+    },
+    "session_token": {
+      "description": "Active session token",
+      "type": "string"
+    },
+    "unlock_token": {
+      "description": "One-time token for the 'Unlock my account' email link.",
+      "type": "string"
+    },
+    "unlock_token_expires_at": {
+      "description": "When unlock_token expires (24h after lockout).",
+      "type": "string"
+    },
+    "security_question_1_answer_hash": {
+      "description": "Bcrypt hash of answer to Q1: What is your mother's maiden name?",
+      "type": "string"
+    },
+    "security_question_2_answer_hash": {
+      "description": "Bcrypt hash of answer to Q2: What primary school did you attend?",
+      "type": "string"
+    },
+    "security_question_3_answer_hash": {
+      "description": "Bcrypt hash of answer to Q3: What is your favourite car?",
+      "type": "string"
+    },
+    "security_question_4_answer_hash": {
+      "description": "Bcrypt hash of answer to Q4: What town were you born in?",
+      "type": "string"
+    },
+    "security_questions_set_at": {
+      "description": "When the user first set their security questions.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "recovery_attempts_count": {
+      "default": 0,
+      "description": "Number of failed security-question recovery attempts in the current window.",
+      "type": "number"
+    },
+    "recovery_attempts_locked_until": {
+      "description": "Account recovery locked until this time (set after 3 failed recovery attempts).",
+      "format": "date-time",
+      "type": "string"
+    },
+    "recovery_token": {
+      "description": "One-time token issued after successful security-question verification.",
+      "type": "string"
+    },
+    "recovery_token_expires_at": {
+      "description": "When the recovery_token expires (15 minutes after issuance).",
+      "format": "date-time",
+      "type": "string"
+    },
+    "welcome_seen_at": {
+      "description": "Timestamp when the user clicked 'Continue to dashboard' on the welcome page.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "city": {
+      "description": "User's city (collected at signup).",
+      "type": "string"
+    },
+    "street_address": {
+      "description": "User's street address (collected at signup).",
+      "type": "string"
+    },
+    "province": {
+      "description": "User's South African province (collected at signup).",
+      "enum": [
+        "gauteng",
+        "western_cape",
+        "kwazulu_natal",
+        "eastern_cape",
+        "free_state",
+        "limpopo",
+        "mpumalanga",
+        "north_west",
+        "northern_cape"
+      ],
+      "type": "string"
+    },
+    "business_name": {
+      "description": "Denormalised business name for portal use (mirrors Client.business_name).",
+      "type": "string"
+    }
+  },
+  "required": [
+    "email",
+    "password_hash"
+  ],
+  "rls": {
+    "delete": {
+      "user_condition": {
+        "role": "owner"
+      }
+    }
+  }
+}

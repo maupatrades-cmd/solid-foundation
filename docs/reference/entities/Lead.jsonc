@@ -1,0 +1,397 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "business_name": {
+      "type": "string"
+    },
+    "contact_person": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "cpc_outbound",
+        "field_agent_direct",
+        "fnc_referral",
+        "inbound",
+        "referral",
+        "phone_call_to_admin",
+        "other"
+      ],
+      "default": "cpc_outbound"
+    },
+    "submitted_by": {
+      "type": "string",
+      "description": "User ID of CPC, Field Agent, or Admin who submitted"
+    },
+    "submitted_by_name": {
+      "type": "string"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "urgent"
+      ],
+      "default": "normal"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_verification",
+        "verified",
+        "rejected",
+        "converted",
+        "duplicate",
+        "needs_clarification"
+      ],
+      "default": "pending_verification"
+    },
+    "verified_by": {
+      "type": "string"
+    },
+    "verified_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "converted_to_deal_id": {
+      "type": "string"
+    },
+    "cpc_r87_paid": {
+      "type": "boolean",
+      "default": false
+    },
+    "warm_lead_criteria": {
+      "type": "object",
+      "properties": {
+        "has_business_premises": {
+          "type": "boolean",
+          "default": false
+        },
+        "has_trading_history": {
+          "type": "boolean",
+          "default": false
+        },
+        "decision_maker_contacted": {
+          "type": "boolean",
+          "default": false
+        },
+        "expressed_interest": {
+          "type": "boolean",
+          "default": false
+        },
+        "has_budget_indication": {
+          "type": "boolean",
+          "default": false
+        },
+        "not_existing_client": {
+          "type": "boolean",
+          "default": false
+        },
+        "valid_contact_details": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "warm_lead_criteria_v2": {
+      "type": "object",
+      "properties": {
+        "has_business_premises": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "has_trading_history": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "decision_maker_contacted": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "has_budget_indication": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "expressed_interest": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "follow_up_agreed": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "permission_to_contact": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "qualification_extras": {
+      "type": "object",
+      "properties": {
+        "monthly_revenue_band": {
+          "type": "string",
+          "enum": [
+            "under_20k",
+            "20k_50k",
+            "50k_150k",
+            "150k_500k",
+            "500k_plus",
+            "prefer_not_say"
+          ]
+        },
+        "industry_vertical": {
+          "type": "string",
+          "enum": [
+            "retail",
+            "food_beverage",
+            "beauty_salons",
+            "construction",
+            "professional_services",
+            "health_wellness",
+            "education",
+            "automotive",
+            "township_sme",
+            "other"
+          ]
+        },
+        "employee_band": {
+          "type": "string",
+          "enum": [
+            "just_me",
+            "2_5",
+            "6_10",
+            "11_25",
+            "26_50",
+            "50_plus"
+          ]
+        },
+        "decision_timeline": {
+          "type": "string",
+          "enum": [
+            "this_week",
+            "this_month",
+            "30_60_days",
+            "just_exploring",
+            "unsure"
+          ]
+        },
+        "marketing_situation": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "package_interest": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lead_temperature": {
+          "type": "string",
+          "enum": [
+            "cold",
+            "warm",
+            "hot"
+          ]
+        },
+        "best_followup_time": {
+          "type": "string"
+        },
+        "best_followup_days": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "qualifier_notes": {
+          "type": "string"
+        }
+      }
+    },
+    "qualified_by": {
+      "type": "string"
+    },
+    "qualified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "qualification_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "lead_score": {
+      "type": "number",
+      "default": 0
+    },
+    "score_tier": {
+      "type": "string",
+      "enum": [
+        "cold",
+        "warm",
+        "hot",
+        "high_value"
+      ],
+      "default": "cold"
+    },
+    "outreach_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "outreach_assigned_to": {
+      "type": "string"
+    },
+    "outreach_notes": {
+      "type": "string"
+    },
+    "last_scored_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "business_name",
+    "contact_person",
+    "phone"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "data.submitted_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.submitted_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "owner"
+      }
+    }
+  }
+}

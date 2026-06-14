@@ -1,0 +1,198 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "invoice_number": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "invoice_type": {
+      "type": "string",
+      "enum": [
+        "setup_fee",
+        "monthly_retainer",
+        "add_on_setup",
+        "add_on_monthly",
+        "once_off",
+        "per_sms",
+        "cancellation_fee",
+        "acceleration_amount"
+      ],
+      "default": "monthly_retainer"
+    },
+    "description": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Invoice amount in ZAR"
+    },
+    "vat_applicable": {
+      "type": "boolean",
+      "default": false
+    },
+    "vat_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "total_amount": {
+      "type": "number"
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "paid",
+        "overdue",
+        "failed",
+        "cancelled",
+        "partial"
+      ],
+      "default": "draft"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "debit_order",
+        "eft",
+        "yoco",
+        "payfast",
+        "cash",
+        "other"
+      ]
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "debit_run_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "failed_debit_count": {
+      "type": "number",
+      "default": 0
+    },
+    "last_failed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "deal_id": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "cancellation_reason": {
+      "type": "string",
+      "description": "Reason for cancelling this invoice"
+    },
+    "cancelled_by_id": {
+      "type": "string",
+      "description": "User ID of the person who cancelled the invoice"
+    },
+    "cancelled_by_name": {
+      "type": "string",
+      "description": "Name of the person who cancelled the invoice"
+    },
+    "cancelled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when invoice was cancelled"
+    },
+    "assigned_cpc_id": {
+      "type": "string",
+      "description": "CPC user ID linked to this invoice (for reporting)"
+    },
+    "assigned_cpc_name": {
+      "type": "string"
+    },
+    "assigned_field_agent_id": {
+      "type": "string",
+      "description": "Field agent user ID linked to this invoice (for reporting)"
+    },
+    "assigned_field_agent_name": {
+      "type": "string"
+    },
+    "closer_id": {
+      "type": "string",
+      "description": "AppUser.id of the salesperson who closed this sale. Sourced from Deal.closer_id on initial signups (LogSale) and from the caller's session on upsells (add-product-to-client). Drives 'My Sales' attribution and the closer lookup in calculate-commission. Closes LB-097."
+    },
+    "lead_source_user_id": {
+      "type": "string",
+      "description": "AppUser.id of the CPC/staff member who generated the lead, if different from the closer. Used by calculate-commission to attribute lead-fee bonuses. Closes LB-097."
+    }
+  },
+  "required": [
+    "client_id",
+    "invoice_type",
+    "amount",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.client_id": "{{user.data.client_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "owner"
+      }
+    }
+  }
+}

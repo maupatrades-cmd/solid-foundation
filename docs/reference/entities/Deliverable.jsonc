@@ -1,0 +1,171 @@
+{
+  "name": "Deliverable",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "deal_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "Name of the deliverable"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "setup",
+        "monthly_recurring",
+        "once_off"
+      ]
+    },
+    "product": {
+      "type": "string"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "assigned_to_name": {
+      "type": "string"
+    },
+    "owner_role": {
+      "type": "string",
+      "enum": [
+        "head_of_tech",
+        "admin",
+        "founder",
+        "freelancer",
+        "field_agent"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "awaiting_client",
+        "client_reviewing",
+        "approved",
+        "deemed_approved",
+        "completed",
+        "blocked"
+      ],
+      "default": "not_started"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "review_deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "month_year": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "file_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "client_id",
+    "title",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "head_of_tech"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.client_id": "{{user.data.client_id}}"
+        },
+        {
+          "data.assigned_to": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "head_of_tech"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "field_agent"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.assigned_to": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "head_of_tech"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "owner"
+      }
+    }
+  }
+}
