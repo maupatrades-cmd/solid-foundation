@@ -90,6 +90,7 @@ export function WavingMascot() {
         <Mascot mode="loop" size={90} />
       </motion.div>
 
+
       {landed && (
         <>
           {/* Desktop bubble */}
