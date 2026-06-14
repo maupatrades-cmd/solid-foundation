@@ -52,15 +52,15 @@ export function WavingMascot() {
   return (
     <>
       <motion.div
-        initial={{ x: "-120vw", rotate: -720, opacity: 0 }}
+        initial={{ x: "-120vw", rotate: -1440, opacity: 0 }}
         animate={{ x: 0, rotate: 0, opacity: 1 }}
-        transition={{ delay: 1.2, duration: 1.9, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ delay: 0.8, duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
         onAnimationComplete={() => setLanded(true)}
+        className="hidden sm:block"
         style={{
           position: "absolute",
-          top: "-55px",
-          left: "50%",
-          marginLeft: "-60px",
+          top: "-60px",
+          left: "calc(50% - 130px)",
           width: 120,
           height: 120,
           zIndex: 30,
@@ -69,6 +69,25 @@ export function WavingMascot() {
         }}
       >
         <Mascot mode="loop" size={120} />
+      </motion.div>
+
+      {/* Mobile rolling mascot */}
+      <motion.div
+        initial={{ x: "-120vw", rotate: -1440, opacity: 0 }}
+        animate={{ x: 0, rotate: 0, opacity: 1 }}
+        transition={{ delay: 0.8, duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
+        className="block sm:hidden"
+        style={{
+          position: "absolute",
+          top: "-20px",
+          left: "8px",
+          width: 90,
+          height: 90,
+          zIndex: 30,
+          pointerEvents: "none",
+        }}
+      >
+        <Mascot mode="loop" size={90} />
       </motion.div>
 
       {landed && (
@@ -82,8 +101,8 @@ export function WavingMascot() {
             style={{
               position: "absolute",
               top: "-38px",
-              left: "calc(50% + 62px)",
-              width: 172,
+              left: "calc(50% + 10px)",
+              width: 180,
               background: "#ffffff",
               borderRadius: 14,
               padding: "10px 13px",
