@@ -101,8 +101,8 @@ export function WavingMascot() {
             style={{
               position: "absolute",
               top: "-38px",
-              left: "calc(50% + 62px)",
-              width: 172,
+              left: "calc(50% + 10px)",
+              width: 180,
               background: "#ffffff",
               borderRadius: 14,
               padding: "10px 13px",
