@@ -85,7 +85,11 @@ export function Mascot({
       data-mascot="loop"
       style={{ width: size, height: size, pointerEvents: "none", background: "rgba(255,0,0,0.2)", border: "2px dashed red" }}
     >
-      {data ? <Lottie animationData={data} loop autoplay /> : <span style={{color:'red',fontSize:10}}>NODATA</span>}
+      {data ? (
+        <Lottie animationData={data} loop autoplay style={{ width: "100%", height: "100%" }} />
+      ) : (
+        <span style={{ color: "red", fontSize: 10 }}>NODATA</span>
+      )}
     </div>
   );
 }
