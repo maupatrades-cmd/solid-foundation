@@ -14,6 +14,279 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          city: string | null
+          created_at: string
+          email: string | null
+          id: string
+          industry: string | null
+          monthly_retainer: number
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          industry?: string | null
+          monthly_retainer?: number
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          industry?: string | null
+          monthly_retainer?: number
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      commissions: {
+        Row: {
+          accrued_at: string
+          amount: number
+          created_at: string
+          deal_id: string | null
+          id: string
+          paid_at: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          accrued_at?: string
+          amount?: number
+          created_at?: string
+          deal_id?: string | null
+          id?: string
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          accrued_at?: string
+          amount?: number
+          created_at?: string
+          deal_id?: string | null
+          id?: string
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deals: {
+        Row: {
+          client_id: string | null
+          closed_at: string | null
+          created_at: string
+          id: string
+          monthly_retainer: number
+          owner_user_id: string | null
+          setup_fee: number
+          stage: string
+          term_months: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          monthly_retainer?: number
+          owner_user_id?: string | null
+          setup_fee?: number
+          stage?: string
+          term_months?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          monthly_retainer?: number
+          owner_user_id?: string | null
+          setup_fee?: number
+          stage?: string
+          term_months?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount: number
+          client_id: string | null
+          created_at: string
+          due_at: string | null
+          id: string
+          invoice_number: string | null
+          issued_at: string
+          paid_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          invoice_number?: string | null
+          issued_at?: string
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          invoice_number?: string | null
+          issued_at?: string
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          created_at: string
+          email: string | null
+          estimated_value: number
+          id: string
+          name: string
+          source: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          estimated_value?: number
+          id?: string
+          name: string
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          estimated_value?: number
+          id?: string
+          name?: string
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      monthly_reports: {
+        Row: {
+          created_at: string
+          id: string
+          kpi_actual: number
+          kpi_target: number
+          period_month: string
+          role: string | null
+          staff_name: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kpi_actual?: number
+          kpi_target?: number
+          period_month: string
+          role?: string | null
+          staff_name: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kpi_actual?: number
+          kpi_target?: number
+          period_month?: string
+          role?: string | null
+          staff_name?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      playbooks: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          pinned_for_role: Database["public"]["Enums"]["app_role"] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          pinned_for_role?: Database["public"]["Enums"]["app_role"] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          pinned_for_role?: Database["public"]["Enums"]["app_role"] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           agency_history: string | null
@@ -134,6 +407,42 @@ export type Database = {
         }
         Relationships: []
       }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          description: string | null
+          due_at: string | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -160,6 +469,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bootstrap_owner: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
