@@ -31,21 +31,29 @@ function AuthPage() {
   const [signUpPassword, setSignUpPassword] = useState("");
   const [signUpName, setSignUpName] = useState("");
 
+  async function routeByRole(userId: string) {
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+    const roles = (data ?? []).map((r) => r.role);
+    const isPrivileged = roles.includes("owner") || roles.includes("admin");
+    navigate({ to: isPrivileged ? "/owner" : "/dashboard", replace: true });
+  }
+
   // Redirect away if already authenticated
   useEffect(() => {
     let mounted = true;
     supabase.auth.getUser().then(({ data }) => {
-      if (mounted && data.user) navigate({ to: "/", replace: true });
+      if (mounted && data.user) routeByRole(data.user.id);
     });
     return () => {
       mounted = false;
     };
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: signInEmail,
       password: signInPassword,
     });
@@ -55,7 +63,7 @@ function AuthPage() {
       return;
     }
     toast.success("Welcome back!");
-    navigate({ to: "/", replace: true });
+    if (data.user) await routeByRole(data.user.id);
   }
 
   async function handleSignUp(e: React.FormEvent) {
