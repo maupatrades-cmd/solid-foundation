@@ -349,14 +349,54 @@ export function MoonwalkMascot({
           50% { transform: rotate(-10deg); }
         }
 
-        /* 3. SPIN */
-        [data-phase="mj-spin"] .mio-character {
-          animation: mj-spin-action 1.2s ease-in-out;
+        /* 3. SIDE-GLIDE (smooth sideways slide with side-stepping legs) */
+        [data-phase="mj-side-glide"] .mio-character {
+          animation: mj-side-dance 2s ease-in-out;
         }
-        @keyframes mj-spin-action {
-          0%   { transform: rotateY(0deg); }
-          50%  { transform: rotateY(180deg); }
-          100% { transform: rotateY(360deg); }
+        [data-phase="mj-side-glide"] .mio-leg-left,
+        [data-phase="mj-side-glide"] .mio-leg-right {
+          animation: mj-side-step 0.5s ease-in-out infinite alternate;
+        }
+        [data-phase="mj-side-glide"] .mio-arm-left {
+          animation: mj-side-arm 0.5s ease-in-out infinite alternate;
+        }
+        [data-phase="mj-side-glide"] .mio-arm-right {
+          animation: mj-side-arm-r 0.5s ease-in-out infinite alternate;
+        }
+        @keyframes mj-side-dance {
+          0%   { transform: translateX(-25px); }
+          50%  { transform: translateX(30px); }
+          100% { transform: translateX(0); }
+        }
+        @keyframes mj-side-step {
+          0%   { transform: rotate(-12deg); }
+          100% { transform: rotate(12deg); }
+        }
+        @keyframes mj-side-arm {
+          0%   { transform: rotate(-18deg); }
+          100% { transform: rotate(18deg); }
+        }
+        @keyframes mj-side-arm-r {
+          0%   { transform: rotate(18deg); }
+          100% { transform: rotate(-18deg); }
+        }
+
+        /* 4. ANTI-GRAVITY LEAN (the iconic stiff forward tilt) */
+        [data-phase="mj-lean"] .mio-character {
+          animation: mj-anti-gravity 2s ease-in-out;
+          transform-origin: 120px 282px;
+        }
+        [data-phase="mj-lean"] .mio-leg-left,
+        [data-phase="mj-lean"] .mio-leg-right {
+          animation: mj-lean-feet 2s ease-in-out;
+        }
+        @keyframes mj-anti-gravity {
+          0%, 100% { transform: rotate(0deg); }
+          35%, 65% { transform: rotate(38deg); }
+        }
+        @keyframes mj-lean-feet {
+          0%, 100% { transform: rotate(0deg); }
+          35%, 65% { transform: rotate(-12deg); }
         }
 
         /* 4. POINT (iconic MJ pose) */
