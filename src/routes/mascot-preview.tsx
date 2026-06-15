@@ -34,7 +34,7 @@ function MascotPreviewPage() {
         🕺 Moonwalk Mascot
       </h1>
       <p style={{ opacity: 0.7, marginTop: -16, fontSize: 14 }}>
-        spin → kick → hands up → point → turn → moonwalk · loops forever
+        idle → kick → moonwalk → spin → point · loops forever
       </p>
 
       <div
