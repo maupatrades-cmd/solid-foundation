@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as MascotPreviewRouteImport } from './routes/mascot-preview'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -21,6 +22,11 @@ import { Route as AuthenticatedOwnerSectionRouteImport } from './routes/_authent
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MascotPreviewRoute = MascotPreviewRouteImport.update({
+  id: '/mascot-preview',
+  path: '/mascot-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -62,6 +68,7 @@ const AuthenticatedOwnerSectionRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/mascot-preview': typeof MascotPreviewRoute
   '/register': typeof RegisterRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/owner': typeof AuthenticatedOwnerRouteWithChildren
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/mascot-preview': typeof MascotPreviewRoute
   '/register': typeof RegisterRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/owner/$section': typeof AuthenticatedOwnerSectionRoute
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/mascot-preview': typeof MascotPreviewRoute
   '/register': typeof RegisterRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/owner': typeof AuthenticatedOwnerRouteWithChildren
@@ -92,18 +101,27 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/mascot-preview'
     | '/register'
     | '/dashboard'
     | '/owner'
     | '/owner/$section'
     | '/owner/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/register' | '/dashboard' | '/owner/$section' | '/owner'
+  to:
+    | '/'
+    | '/auth'
+    | '/mascot-preview'
+    | '/register'
+    | '/dashboard'
+    | '/owner/$section'
+    | '/owner'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/mascot-preview'
     | '/register'
     | '/_authenticated/dashboard'
     | '/_authenticated/owner'
@@ -115,6 +133,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  MascotPreviewRoute: typeof MascotPreviewRoute
   RegisterRoute: typeof RegisterRoute
 }
 
@@ -125,6 +144,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mascot-preview': {
+      id: '/mascot-preview'
+      path: '/mascot-preview'
+      fullPath: '/mascot-preview'
+      preLoaderRoute: typeof MascotPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -209,6 +235,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  MascotPreviewRoute: MascotPreviewRoute,
   RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
