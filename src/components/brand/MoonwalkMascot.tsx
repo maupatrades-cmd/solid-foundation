@@ -18,14 +18,17 @@ export function MoonwalkMascot({
   className?: string;
   style?: CSSProperties;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, "style" | "className">) {
-  const [phase, setPhase] = useState<"idle" | "mj-kick" | "mj-moonwalk" | "mj-spin" | "mj-point">("idle");
+  const [phase, setPhase] = useState<
+    "idle" | "mj-kick" | "mj-moonwalk" | "mj-side-glide" | "mj-lean" | "mj-point"
+  >("idle");
 
   useEffect(() => {
     const seq = [
       { p: "idle" as const, ms: 1000 },
-      { p: "mj-kick" as const, ms: 800 },
+      { p: "mj-kick" as const, ms: 1000 },
       { p: "mj-moonwalk" as const, ms: 2400 },
-      { p: "mj-spin" as const, ms: 1200 },
+      { p: "mj-side-glide" as const, ms: 2000 },
+      { p: "mj-lean" as const, ms: 2000 },
       { p: "mj-point" as const, ms: 1500 },
     ];
     let i = 0;
